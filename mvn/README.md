@@ -1,7 +1,14 @@
 # Tool builder: `gcr.io/cloud-builders/mvn`
 
-This Container Builder build step runs Maven. It also includes a number of
-dependencies that are precached within the image.
+This Container Builder build step runs Maven.
+
+You might also consider using an [official `maven` image](https://hub.docker.com/_/maven/) and specifying the `mvn` entrypoint:
+
+ ```yaml
+ steps:
+ - name: maven:3.5.4
+   entrypoint: mvn
+   args: ['build']
 
 ## Building this builder
 
