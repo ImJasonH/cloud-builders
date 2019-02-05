@@ -1,3 +1,2 @@
 ARG DOCKER_VERSION=latest
 FROM docker:$DOCKER_VERSION
-ENTRYPOINT ["docker"]
