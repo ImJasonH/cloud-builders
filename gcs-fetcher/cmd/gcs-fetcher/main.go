@@ -25,10 +25,10 @@ import (
 	"path/filepath"
 	"time"
 
+	"cloud.google.com/go/storage"
 	"github.com/GoogleCloudPlatform/cloud-builders/gcs-fetcher/pkg/common"
 	"github.com/GoogleCloudPlatform/cloud-builders/gcs-fetcher/pkg/fetcher"
-
-	"cloud.google.com/go/storage"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
 
@@ -89,7 +89,13 @@ func main() {
 	}
 
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithUserAgent(userAgent))
+	authOpt := option.WithScopes(storage.ScopeReadOnly)
+	if _, err := google.FindDefaultCredentials(ctx, storage.ScopeReadOnly); err != nil {
+		log.Println("Could not find default credentials, falling back to anonymous: %v", err)
+		authOpt = option.WithoutAuthentication()
+	}
+
+	client, err := storage.NewClient(ctx, option.WithUserAgent(userAgent), authOpt)
 	if err != nil {
 		logFatalf(stderr, "Failed to create new GCS client: %v", err)
 	}
