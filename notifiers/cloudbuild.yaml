@@ -1,0 +1,22 @@
+steps:
+# Run tests.
+- name: 'golang'
+  entrypoint: 'go'
+  args: ['test', './...']
+
+# Build the smtp binary and put into the builder image.
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--build-arg=cmd=./cmd/smtp/', '-t', 'gcr.io/$PROJECT_ID/notifiers/smtp', '.']
+- name: 'gcr.io/$PROJECT_ID/notifiers/smtp'
+  args: ['--help']
+
+# Build the slack binary and put it into the builder image.
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--build-arg=cmd=./cmd/slack/', '-t', 'gcr.io/$PROJECT_ID/notifiers/slack', '.']
+- name: 'gcr.io/$PROJECT_ID/notifiers/slack'
+  args: ['--help']
+
+# Push the images.
+images:
+- 'gcr.io/$PROJECT_ID/notifiers/smtp'
+- 'gcr.io/$PROJECT_ID/notifiers/slack'
